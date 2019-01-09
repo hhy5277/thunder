@@ -90,6 +90,11 @@ func PrepareQuery(typ Type, selectionSet *SelectionSet) error {
 			return NewClientError("enum field must have no selections")
 		}
 		return nil
+	case *CustomScalar:
+		if selectionSet != nil {
+			return NewClientError("scalar field must have no selections")
+		}
+		return nil
 	case *Union:
 		if selectionSet == nil {
 			return NewClientError("object field must have selections")
@@ -373,6 +378,8 @@ func (e *Executor) execute(ctx context.Context, typ Type, source interface{}, se
 			return mapVal, nil
 		}
 		return nil, errors.New("enum is not valid")
+	case *CustomScalar:
+		return typ.Unwrapper(source)
 	case *Union:
 		return e.executeUnion(ctx, typ, source, selectionSet)
 	case *Object:

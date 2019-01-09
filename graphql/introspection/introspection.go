@@ -99,6 +99,8 @@ func (s *introspection) registerType(schema *schemabuilder.Schema) {
 			return UNION
 		case *graphql.Scalar:
 			return SCALAR
+		case *graphql.CustomScalar:
+			return SCALAR
 		case *graphql.Enum:
 			return ENUM
 		case *graphql.List:
@@ -120,6 +122,8 @@ func (s *introspection) registerType(schema *schemabuilder.Schema) {
 			return t.Name
 		case *graphql.Scalar:
 			return t.Type
+		case *graphql.CustomScalar:
+			return t.TypeName
 		case *graphql.Enum:
 			return t.Type
 		case *graphql.InputObject:
@@ -278,6 +282,12 @@ func collectTypes(typ graphql.Type, types map[string]graphql.Type) {
 			return
 		}
 		types[typ.Type] = typ
+
+	case *graphql.CustomScalar:
+		if _, ok := types[typ.TypeName]; ok {
+			return
+		}
+		types[typ.TypeName] = typ
 
 	case *graphql.Enum:
 		if _, ok := types[typ.Type]; ok {

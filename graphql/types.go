@@ -43,6 +43,18 @@ func (e *Enum) enumValues() []string {
 	return e.Values
 }
 
+// CustomScalar is a leaf value with a custom Unwrapper function.
+type CustomScalar struct {
+	TypeName  string
+	Unwrapper func(interface{}) (interface{}, error)
+}
+
+func (c *CustomScalar) isType() {}
+
+func (c *CustomScalar) String() string {
+	return c.TypeName
+}
+
 // Object is a value with several fields
 type Object struct {
 	Name        string
